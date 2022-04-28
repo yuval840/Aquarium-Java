@@ -1,5 +1,6 @@
 package q3;
 
+
 import javax.swing.*;          
 import java.awt.*;
 import java.awt.event.*;
@@ -14,7 +15,7 @@ public class AquaFrame extends JFrame {
 	}
 	public static void main(String[] args) {
 		MyFrame frame1=new MyFrame("my Aquarium");
-
+		frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame1.pack();
 		frame1.setSize(800, 500);
 		frame1.setLocationRelativeTo(null);
@@ -30,6 +31,8 @@ class MyFrame extends JFrame implements ActionListener{
 	JMenuBar z;
 	
 	AquaPanel Aquarium;
+	//boolean picF;
+	public static boolean picF;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -49,8 +52,10 @@ class MyFrame extends JFrame implements ActionListener{
 		
 		w1=new JMenuItem("Image");
 		w1.addActionListener(this);
+		
 		w2=new JMenuItem("Blue");
 		w2.addActionListener(this);
+		
 		w3=new JMenuItem("None");
 		w3.addActionListener(this);
 		
@@ -82,15 +87,20 @@ class MyFrame extends JFrame implements ActionListener{
 			JOptionPane.showMessageDialog(this,"Home Work 2 \n GUI @ Threads");
 		
 		if (e.getSource().equals(w1))
-			return;
+			picF=true;
 			
-		if (e.getSource().equals(w2)) {
+		if (e.getSource().equals(w2)) 
+		{
 			Aquarium.setBackground(Color.BLUE);
+			picF=false;
 		}
 		
 		if (e.getSource().equals(w3))
+		{
 			Aquarium.setBackground(Color.WHITE);
-		
+			picF=false;
+		}
 	}
+
 	
 }

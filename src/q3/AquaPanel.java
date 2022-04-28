@@ -3,6 +3,7 @@ package q3;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashSet;
 
 public class AquaPanel extends JPanel implements ActionListener {
 
@@ -24,8 +25,16 @@ public class AquaPanel extends JPanel implements ActionListener {
 	private final static String BUTTON_TEXT7 = "Exit";
 
 	JPanel p1;
+	public static Dimension dm;
+	static int dmwi;
+	static int dmhe;
+	ImageIcon image=new ImageIcon("12aquariums-superJumbo.JPG");
+	int count=0;
+	
+	public static boolean res=false;
+	
+	final static HashSet<Swimmable> animals = new HashSet<Swimmable>();
 	public AquaPanel() {
-
 		this.setBackground(Color.WHITE);
 		addAnimal = new JButton(BUTTON_TEXT1);
 		sleep = new JButton(BUTTON_TEXT2);
@@ -34,10 +43,10 @@ public class AquaPanel extends JPanel implements ActionListener {
 		food = new JButton(BUTTON_TEXT5);
 		info = new JButton(BUTTON_TEXT6);
 		exit = new JButton(BUTTON_TEXT7);
-
+		
 		p1 = new JPanel(new BorderLayout());
 		p1.setLayout(new GridLayout(1, 7));
-
+		
 		p1.add(addAnimal);
 		addAnimal.addActionListener(this);
 		
@@ -64,24 +73,47 @@ public class AquaPanel extends JPanel implements ActionListener {
 
 	}
 
-	public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(exit)) {
 			System.exit(0);
 		}
 
 		if (e.getSource().equals(addAnimal)) {
-			AddAnimalDialog ani = new AddAnimalDialog();
-			if(ani.ColorBox.equals(e)) {
-				
-				String color=(String) ani.ColorBox.getSelectedItem();
-				System.out.println("aqua color:"+color);
-			}
-			//int size=ani.SizeSlider.getValue();
-			
+			AddAnimalDialog  ani = new AddAnimalDialog(this);
+			ani.setVisible(true);
+			//addAnimal.setEnabled(false);
 		}
+	
+		
+		if(e.getSource().equals(sleep))
+		{
+			for (Swimmable swimmable : animals) {
+				swimmable.setSuspend();
+			}
+		}
+		if(e.getSource().equals(wakeUp))
+		{
+			for(Swimmable s:animals)
+			{
+				s.setResume();
+			}
+		}
+		if(e.getSource().equals(reset))
+		{
+			res=true;
+			animals.clear();
+			//addAnimal.setEnabled(true);
+		}
+		
 		if(e.getSource().equals(info))
 		{
-
+			System.out.println(animals);
+					
+			InfoDialog table=new InfoDialog(animals);
+			table.setVisible(true);
+			
+			
+			
 		}
 	}
 
@@ -89,5 +121,26 @@ public class AquaPanel extends JPanel implements ActionListener {
 		this.setBackground(Color.BLUE);
 
 	}
-
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		dm = this.getSize();
+		dmwi=dm.width;
+		dmhe=dm.height;
+		
+		if(MyFrame.picF==true)
+		{
+			Image img=image.getImage();
+			g.drawImage(img, 0, 0,dmwi,dmhe, this);
+		}
+		for(Swimmable s:animals)
+		{
+			s.drawAnimal(g);
+		}
+		repaint();
+	}
+	public void add_ani(Swimmable temp)
+	{
+		animals.add(temp);
+		temp.start();
+	}
 }

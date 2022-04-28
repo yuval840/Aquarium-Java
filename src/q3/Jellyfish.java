@@ -18,7 +18,11 @@ public class Jellyfish extends Swimmable {
 	private int y_front;
 	private int x_dir;
 	private int y_dir;
-
+	
+	int x_flag=1;
+	int y_flag=1;
+	private boolean suspended;
+	private Thread Thread0;
 	/**
 	 * Constructor for Jellyfish class
 	 * 
@@ -39,6 +43,10 @@ public class Jellyfish extends Swimmable {
 		this.y_front = y_front;
 		this.x_dir = 1;
 		this.y_dir = 1;
+		
+		this.suspended=false;
+		this.Thread0=new Thread(this);
+		Thread0.start();
 	}
 
 	/**
@@ -361,5 +369,76 @@ public class Jellyfish extends Swimmable {
 			g.drawLine(x_front - size / 2 + size / numLegs + size * i / (numLegs + 1), y_front,
 					x_front - size / 2 + size / numLegs + size * i / (numLegs + 1), y_front + size / 3);
 	}
+	 @Override
+	    public void run()
+	    {
+		 Thread me=Thread.currentThread();
+		
+		 while(Thread0==me)
+	    	{
 
+				synchronized (this) {
+					while (suspended) {
+						try {
+							wait();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					if(AquaPanel.res==true)
+					{
+						break;
+					}
+				}
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					System.out.println("Sleep ERROR!");
+				}
+				x_front += horSpeed * x_flag;
+				y_front += verSpeed * y_flag;
+				
+				
+				
+				if (x_front > AquaPanel.dmwi) {
+					x_flag = -1;
+					x_front = AquaPanel.dmwi;
+				} else if (x_front < 0) {
+					x_flag = 1;
+					x_front = 0;
+				}
+
+				if (y_front > AquaPanel.dmhe) {
+					y_flag = -1;
+					y_front = AquaPanel.dmhe;
+				} else if (y_front < 0) {
+					y_flag = 1;
+					y_front = 0;
+				}
+	    		
+	    	}
+	    }
+	    
+		@Override
+		public void setSuspend() {
+			suspended=true;
+			
+		}
+
+		@Override
+		public void setResume() {
+			this.suspended=false;
+			synchronized (this){
+				this.notify();
+			}
+			
+		}
+
+//		@Override
+//		public void setBarrier(CyclicBarrier b) {
+//			// TODO Auto-generated method stub
+			
+//	}
+//}
 }
