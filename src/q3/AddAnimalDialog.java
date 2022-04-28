@@ -1,16 +1,10 @@
 package q3;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.border.MatteBorder;
+import java.awt.Dimension;
 
-import com.sun.net.httpserver.Authenticator.Result;
-
-import java.awt.Color;
-import java.awt.Dialog;
-import java.awt.Font;
 import java.awt.SystemColor;
 
 public class AddAnimalDialog extends JDialog implements ActionListener {
@@ -19,12 +13,43 @@ public class AddAnimalDialog extends JDialog implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-	JComboBox<String> ColorBox;
-	JSlider SizeSlider;
-	public AddAnimalDialog() {
+	 JComboBox<String> ColorBox;
+	 JSlider SizeSlider;
+	JRadioButton Radiofishbtn;
+	JRadioButton RadioJellyfishbtn;
+	 JSlider Verticalspeedslider;
+	 JSlider Horazionalspeedslider;
+	
+	public  int getColorBox() {
+		return ColorBox.getSelectedIndex()+1;
+	}
+
+
+	public  int getSizeSlider() {
+		return SizeSlider.getValue();
+	}
+
+	public  int getVerticalspeedslider() {
+		return Verticalspeedslider.getValue();
+	}
+
+	public  int  getHorazionalspeedslider() {
+		return Horazionalspeedslider.getValue();
+	}
+
+
+	JButton addbtn;
+	
+	AquaPanel panel;
+	public static Dimension dim;
+	static int dmw;
+	static int dmh;
+	
+	
+	public AddAnimalDialog(AquaPanel p) {
+		panel=p;
 		getContentPane().setLayout(null);
-		
-		JSlider SizeSlider = new JSlider();
+		SizeSlider = new JSlider();
 		SizeSlider.setPaintLabels(true);
 		SizeSlider.setMinorTickSpacing(10);
 		SizeSlider.setMajorTickSpacing(20);
@@ -35,17 +60,18 @@ public class AddAnimalDialog extends JDialog implements ActionListener {
 		SizeSlider.setBounds(0, 275, 484, 49);
 		getContentPane().add(SizeSlider);
 		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("Fish");
-		buttonGroup.add(rdbtnNewRadioButton);
-		rdbtnNewRadioButton.setBounds(0, 33, 65, 23);
-		getContentPane().add(rdbtnNewRadioButton);
+		Radiofishbtn = new JRadioButton("Fish");
+		Radiofishbtn.setSelected(true);
+		buttonGroup.add(Radiofishbtn);
+		Radiofishbtn.setBounds(0, 33, 65, 23);
+		getContentPane().add(Radiofishbtn);
 		
-		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("Jellyfish");
-		buttonGroup.add(rdbtnNewRadioButton_1);
-		rdbtnNewRadioButton_1.setBounds(72, 33, 75, 23);
-		getContentPane().add(rdbtnNewRadioButton_1);
+		RadioJellyfishbtn = new JRadioButton("Jellyfish");
+		buttonGroup.add(RadioJellyfishbtn);
+		RadioJellyfishbtn.setBounds(72, 33, 75, 23);
+		getContentPane().add(RadioJellyfishbtn);
 		
-		JSlider Verticalspeedslider = new JSlider();
+		Verticalspeedslider = new JSlider();
 		Verticalspeedslider.setValue(1);
 		Verticalspeedslider.setPaintLabels(true);
 		Verticalspeedslider.setMajorTickSpacing(1);
@@ -56,7 +82,7 @@ public class AddAnimalDialog extends JDialog implements ActionListener {
 		Verticalspeedslider.setBounds(0, 104, 209, 39);
 		getContentPane().add(Verticalspeedslider);
 		
-		JSlider Horazionalspeedslider = new JSlider();
+		Horazionalspeedslider = new JSlider();
 		Horazionalspeedslider.setValue(1);
 		Horazionalspeedslider.setPaintTicks(true);
 		Horazionalspeedslider.setPaintLabels(true);
@@ -70,7 +96,7 @@ public class AddAnimalDialog extends JDialog implements ActionListener {
 		ColorBox = new JComboBox<String>();
 		ColorBox.addActionListener(this);
 		ColorBox.setBackground(SystemColor.control);
-		ColorBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Black", "Yellow", "Red", "Blue", "Green", "Grey"}));
+		ColorBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Black", "Red", "Blue", "Green", "Cyan", "Orange","Yellow","Magenta","Pink"}));
 		ColorBox.setBounds(325, 89, 114, 67);
 		getContentPane().add(ColorBox);
 		
@@ -109,16 +135,9 @@ public class AddAnimalDialog extends JDialog implements ActionListener {
 		txtpnSelectAnimalSize.setBounds(0, 255, 133, 20);
 		getContentPane().add(txtpnSelectAnimalSize);
 		
-		JButton addbtn = new JButton("Add Animal");
-		addbtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//String color=(String) ColorBox.getSelectedItem();
-				//String color = (String) ColorBox.getModel().getSelectedItem();
-				//System.out.println(color);
-				System.out.println(SizeSlider.getValue());
-				System.out.println(Horazionalspeedslider.getValue());
-			}
-		});
+		addbtn = new JButton("Add Animal");
+		addbtn.addActionListener(this);
+		
 		addbtn.setBounds(174, 335, 114, 23);
 		getContentPane().add(addbtn);
 		setSize(500, 400);
@@ -129,11 +148,28 @@ public class AddAnimalDialog extends JDialog implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) 
 	{
-		if(e.getSource()==ColorBox)
+		if(e.getSource().equals(addbtn))
 		{
-			System.out.println(ColorBox.getSelectedItem());
-			
+			Thread.currentThread();
+			if(Thread.activeCount()<=6)
+			{
+				if(Radiofishbtn.isSelected())
+				{
+					Fish Nfish=new Fish(SizeSlider.getValue(),200,200,Horazionalspeedslider.getValue(),Verticalspeedslider.getValue(),ColorBox.getSelectedIndex()+1);
+					panel.add_ani(Nfish);
+				}
+				if(RadioJellyfishbtn.isSelected())
+				{
+					Jellyfish Njelly=new Jellyfish(SizeSlider.getValue(),200,200,Horazionalspeedslider.getValue(),Verticalspeedslider.getValue(),ColorBox.getSelectedIndex()+1);
+					panel.add_ani(Njelly);
+				}
+			}
+			else  
+			{
+				JOptionPane.showMessageDialog(this,"Only 5 Animals On Tank!!");
+			}
+
 		}
-		//System.out.println(SizeSlider.getValue());
-	}
+	}	
+	
 }

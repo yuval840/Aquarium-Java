@@ -15,12 +15,18 @@ public class Fish extends Swimmable {
 
 	private int EAT_DISTANCE;
 	private int size;
-	private int col;
+	private int color;
 	private int eatCount;
 	private int x_front;
 	private int y_front;
 	private int x_dir;
 	private int y_dir;
+	
+	private Thread Thread0;
+	private Boolean suspended;
+	
+	private int x_flag = 1;
+	private int y_flag = 1;
 
 	/**
 	 * Fish class constructor
@@ -37,12 +43,16 @@ public class Fish extends Swimmable {
 		super(horSpeed, verSpeed);
 		this.EAT_DISTANCE = 4;
 		this.size = size;
-		this.col = col;
+		this.color = col;
 		this.eatCount = 0;
 		this.x_front = x_front;
 		this.y_front = y_front;
 		this.x_dir = 1;
 		this.y_dir = 1;
+		
+		this.suspended=false;
+		this.Thread0=new Thread(this);
+		Thread0.start();
 
 	}
 
@@ -54,7 +64,7 @@ public class Fish extends Swimmable {
 		super(0, 0);
 		this.EAT_DISTANCE = 0;
 		this.size = 0;
-		this.col = 0;
+		this.color = 0;
 		this.eatCount = 0;
 		this.x_front = 0;
 		this.y_front = 0;
@@ -73,7 +83,7 @@ public class Fish extends Swimmable {
 		super(other.horSpeed, other.verSpeed);
 		other.EAT_DISTANCE = this.EAT_DISTANCE;
 		other.size = this.size;
-		other.col = this.col;
+		other.color = this.color;
 		other.eatCount = this.eatCount;
 		other.x_front = this.x_front;
 		other.y_front = this.y_front;
@@ -158,23 +168,23 @@ public class Fish extends Swimmable {
 	 */
 	public String getColor() {
 
-		if (col == 1)
+		if (color == 1)
 			return "Black";
-		if (col == 2)
+		if (color == 2)
 			return "Red";
-		if (col == 3)
+		if (color == 3)
 			return "Blue";
-		if (col == 4)
+		if (color == 4)
 			return "Green";
-		if (col == 5)
+		if (color == 5)
 			return "Cyan";
-		if (col == 6)
+		if (color == 6)
 			return "Orange";
-		if (col == 7)
+		if (color == 7)
 			return "Yellow";
-		if (col == 8)
+		if (color == 8)
 			return "Magenta";
-		if (col == 9)
+		if (color == 9)
 			return "Pink";
 		return null;
 
@@ -184,42 +194,42 @@ public class Fish extends Swimmable {
 
 		int[] colorArray = { 0, 0, 0 };
 
-		if (col == 1)
+		if (color == 1)
 			return colorArray;
 
-		if (col == 2) {
+		if (color == 2) {
 			colorArray[0] = 255;
 			return colorArray;
 		}
-		if (col == 3) {
+		if (color == 3) {
 			colorArray[2] = 255;
 			return colorArray;
 		}
-		if (col == 4) {
+		if (color == 4) {
 			colorArray[1] = 255;
 			return colorArray;
 		}
-		if (col == 5) {
+		if (color == 5) {
 			colorArray[1] = 255;
 			colorArray[2] = 255;
 			return colorArray;
 		}
-		if (col == 6) {
+		if (color == 6) {
 			colorArray[0] = 255;
 			colorArray[1] = 165;
 			return colorArray;
 		}
-		if (col == 7) {
+		if (color == 7) {
 			colorArray[0] = 255;
 			colorArray[1] = 255;
 			return colorArray;
 		}
-		if (col == 8) {
+		if (color == 8) {
 			colorArray[0] = 255;
 			colorArray[2] = 255;
 			return colorArray;
 		}
-		if (col == 9) {
+		if (color == 9) {
 			colorArray[0] = 255;
 			colorArray[1] = 192;
 			colorArray[2] = 203;
@@ -283,7 +293,7 @@ public class Fish extends Swimmable {
 	 * @return getCol value;
 	 */
 	public int getCol() {
-		return col;
+		return color;
 	}
 
 	/**
@@ -292,7 +302,7 @@ public class Fish extends Swimmable {
 	 * @param col
 	 */
 	public void setCol(int col) {
-		this.col = col;
+		this.color = col;
 	}
 
 	/**
@@ -334,12 +344,12 @@ public class Fish extends Swimmable {
 	 * the function chaging the color of the fish;
 	 */
 	public void changeColor() {
-		if (this.col == 9) {
-			this.col = 1;
+		if (this.color == 9) {
+			this.color = 1;
 		}
 
 		else {
-			this.col++;
+			this.color++;
 		}
 	}
 
@@ -432,5 +442,76 @@ public class Fish extends Swimmable {
 			g2.setStroke(new BasicStroke(1));
 		}
 	}
+	 @Override
+	    public void run()
+	    {
+		 Thread me= Thread.currentThread();
+		 AquaPanel.res=false;
+	    	while(Thread0==me)
+	    	{
+	    		//System.out.println(x_front);
+				synchronized (this) {
+					while (suspended) {
+						try {
+							wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							break;
+						}
+					}
+					if(AquaPanel.res==true)
+					{
+						break;
+					}
+				}
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					System.out.println("Sleep ERROR!");
+				}
+				x_front += horSpeed * x_flag;
+				y_front += verSpeed * y_flag;
+				
+				
+				
+				if (x_front > AquaPanel.dmwi) {
+					x_flag = -1;
+					x_front = AquaPanel.dmwi;
+					x_dir = -1;
+				} else if (x_front < 0) {
+					x_flag = 1;
+					x_front = 0;
+					x_dir = 1;
+				}
 
-}
+				if (y_front > AquaPanel.dmhe) {
+					y_flag = -1;
+					y_front = AquaPanel.dmhe;
+				} else if (y_front < 0) {
+					y_flag = 1;
+					y_front = 0;
+				}
+	    		
+	    	}
+	    }
+	    
+		@Override
+		public void setSuspend() {
+			suspended=true;
+			
+		}
+
+		@Override
+		public void setResume() {
+			suspended=false;
+			synchronized (this) {
+				notify();
+			}
+		}
+
+//		@Override
+//		public void setBarrier(CyclicBarrier b) {
+//			// TODO Auto-generated method stub
+			
+//	}
+	}

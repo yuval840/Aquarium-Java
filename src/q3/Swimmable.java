@@ -94,8 +94,8 @@ public abstract class Swimmable extends Thread implements Comparable<Swimmable>{
 	/*HW2 Methods:*/
 	public void run() {}
 	abstract public void drawAnimal(Graphics g);
-	//abstract public void setSuspend();
-	//abstract public void setResume();
+	abstract public void setSuspend();
+	abstract public void setResume();
 	//abstract public void setBarrier(CyclicBarrier b);
 
 }
